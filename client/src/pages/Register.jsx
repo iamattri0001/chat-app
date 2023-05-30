@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Logo from '../assets/logo.svg'
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { registerRoute } from '../utils/APIRoutes';
+import { registerRoute, verifyRoute } from '../utils/APIRoutes';
+import { toastOptions } from '../utils/toastSettings';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -14,14 +15,19 @@ const Register = () => {
         password: "",
         confirmPassword: ""
     });
+    useEffect(() => {
+        async function verify() {
+            if (localStorage.getItem('chat-app-user')) {
+                const userDetails = await JSON.parse(localStorage.getItem('chat-app-user'));
+                const { data } = await axios.post(verifyRoute, userDetails);
+                if (data.isTokenValid)
+                    navigate('/');
+            }
+        }
+        verify();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    const toastOptions = {
-        position: 'bottom-right',
-        autoClose: 5000,
-        pauseOnHover: true,
-        closeButton: true,
-        theme: 'colored',
-    };
     const handleSubmit = async (ev) => {
         ev.preventDefault();
         if (!handleValidation())
@@ -65,7 +71,7 @@ const Register = () => {
     }
     return (
         <>
-            <div className='h-screen w-screen flex flex-col items-center justify-center gap-[1rem] bg-[#131324]'>
+            <section className='h-screen w-screen flex flex-col items-center justify-center gap-[1rem] bg-[#131324]'>
                 <form onSubmit={(ev) => handleSubmit(ev)} className='flex flex-col gap-[2rem] bg-[#00000076] rounded-[2rem] px-[5rem] py-[3rem]' autoComplete='off'>
                     <div className='flex items-center gap-[1rem] justify-center'>
                         <img src={Logo} alt='Logo' className='h-[5rem]' />
@@ -100,11 +106,11 @@ const Register = () => {
                         className='bg-transparent p-[1rem] border-[0.1rem] border-[#4E0EFF] rounded-[0.4rem] text-white w-full focus:border-[#997af0] focus:outline-none'
                     />
 
-                    <button type='submit' className='bg-[#997af0] text-white transition-all ease-in-out duration-300 py-[1rem] px-[2rem] border-none font-bold cursor-pointer rounded-[0.4rem] uppercase hover:bg-[#4e0eff]'>Create User</button>
+                    <button type='submit' className='bg-[#997af0] text-white transition-all ease-in-out duration-300 py-[1rem] pb-3 px-[2rem] border-none font-bold cursor-pointer rounded-[0.4rem] uppercase hover:bg-[#4e0eff]'>Create User</button>
 
-                    <span className='uppercase text-white'>Alrady have an account? <Link className='text-[#4e03ff]' to='/login'>Login</Link> </span>
+                    <span className='uppercase text-center text-white'>Alrady have an account? <Link className='text-[#4e03ff]' to='/login'>Login</Link> </span>
                 </form>
-            </div>
+            </section>
             <ToastContainer toastStyle={{ background: '#4E0EFF' }} />
         </>
     )

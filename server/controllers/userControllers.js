@@ -1,10 +1,8 @@
 const User = require('../model/userModel');
 const bcrypt = require('bcrypt');
 
+const { createToken, verifyToken } = require('../utils/token');
 
-require('dotenv').config();
-
-const tokenSecret = process.env.TOKEN_SECRET;
 
 module.exports.register = async (req, res, next) => {
     try {
@@ -23,10 +21,8 @@ module.exports.register = async (req, res, next) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({ username, password: hashedPassword, email });
 
-        const tokenString = username + tokenSecret;
-        const token = await bcrypt.hash(tokenString, 10);
+        const token = await createToken(username);
         res.json({ userDetails: { username, token, id: user._id }, status: true });
-
 
     }
     catch (err) {
@@ -49,9 +45,7 @@ module.exports.login = async (req, res, next) => {
         }
 
 
-        const tokenString = username + tokenSecret;
-        const token = await bcrypt.hash(tokenString, 10);
-        console.log(token);
+        const token = await createToken(username)
         res.json({ userDetails: { username, token, id: user._id }, status: true });
 
 
@@ -65,13 +59,12 @@ module.exports.login = async (req, res, next) => {
 module.exports.verify = async (req, res, next) => {
     try {
         const { token, username } = req.body;
-        const actualTokenString = username + tokenSecret;
 
-        const isTokenValid = await bcrypt.compare(actualTokenString, token);
+        const isTokenValid = await verifyToken(username, token);
+
+        res.json({ isTokenValid });
         if (isTokenValid) {
-            res.json({ validation: true });
-        } else {
-            res.json({ validation: false });
+            console.log('Validated Token for user: ', username);
         }
     }
 
@@ -79,3 +72,25 @@ module.exports.verify = async (req, res, next) => {
         next(err);
     }
 }
+
+
+module.exports.setavatar = async (req, res, next) => {
+    try {
+        const { username, id, token, image } = req.body;
+        const isTokenValid = verifyToken(username, token);
+        if (!isTokenValid) {
+            return res.json({ message: 'unauthorized', status: false });
+        }
+
+        const user = await User.findById(id);
+        user.isAvatarSet = true;
+        user.avatarImage = image;
+        user.save();
+        res.json({ isSet: true })
+        // console.log(user);
+    }
+    catch (err) {
+        next(err);
+    }
+}
+
