@@ -45,8 +45,8 @@ module.exports.login = async (req, res, next) => {
         }
 
 
-        const token = await createToken(username)
-        res.json({ userDetails: { username, token, id: user._id }, status: true });
+        const token = await createToken(username);
+        res.json({ userDetails: { username, token, id: user._id, avatarImage: user.avatarImage }, status: true });
 
 
     }
@@ -59,13 +59,9 @@ module.exports.login = async (req, res, next) => {
 module.exports.verify = async (req, res, next) => {
     try {
         const { token, username } = req.body;
-
         const isTokenValid = await verifyToken(username, token);
 
-        res.json({ isTokenValid });
-        if (isTokenValid) {
-            console.log('Validated Token for user: ', username);
-        }
+        return res.json({ isTokenValid });
     }
 
     catch (err) {
@@ -86,11 +82,30 @@ module.exports.setavatar = async (req, res, next) => {
         user.isAvatarSet = true;
         user.avatarImage = image;
         user.save();
-        res.json({ isSet: true })
-        // console.log(user);
+        res.json({ isSet: true });
     }
     catch (err) {
         next(err);
     }
 }
 
+
+
+module.exports.getaAlUsers = async (req, res, next) => {
+    try {
+        const { token, username } = req.body;
+        const isTokenValid = await verifyToken(username, token);
+        if (!isTokenValid) {
+            return res.json({ message: "unauthorized", status: false });
+        }
+
+        const allUsers = await User.find({ username: { $ne: username } }).select([
+            "username", "_id", "avatarImage"
+        ]);
+
+        res.json(allUsers);
+    }
+    catch (err) {
+        next(err);
+    }
+}

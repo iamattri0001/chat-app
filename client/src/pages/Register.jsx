@@ -23,6 +23,9 @@ const Register = () => {
                 if (data.isTokenValid)
                     navigate('/');
             }
+            else {
+                navigate('/register');
+            }
         }
         verify();
         // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,0 +1,20 @@
+.EmojiPickerReact {
+    position: absolute !important;
+    top: -390px;
+    background-color: #080420;
+    box-shadow: 0 2px 2px #a84fe4;
+    border-color: #a84fe4;
+}
+
+.epr-search {
+    background-color: #a84fe4 !important;
+    color: white !important;
+}
+
+.epr-search::placeholder {
+    color: rgb(190, 187, 187) !important;
+}
+
+.epr-emoji-category-label {
+    background-color: #080420 !important;
+}

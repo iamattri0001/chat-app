@@ -1,8 +1,7 @@
 export const toastOptions = {
     position: 'bottom-right',
-    autoClose: 3000,
+    autoClose: 2500,
     pauseOnHover: true,
     closeButton: true,
     theme: 'colored',
-    // draggable: true
 };

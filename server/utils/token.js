@@ -13,6 +13,8 @@ module.exports.createToken = async (username) => {
 
 
 module.exports.verifyToken = async (username, token) => {
+    if (!token || !username)
+        return false;
     const actualTokenString = username + tokenSecret;
     const isTokenValid = await bcrypt.compare(actualTokenString, token);
     return isTokenValid;

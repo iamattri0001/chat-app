@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const userRoutes = require('./routes/userRoutes')
+const messageRoutes = require("./routes/messageRoutes");
 
 require('dotenv').config();
 
@@ -22,3 +23,4 @@ const sever = app.listen(process.env.PORT, () => {
 
 
 app.use('/api/auth', userRoutes);
+app.use('/api/message', messageRoutes);

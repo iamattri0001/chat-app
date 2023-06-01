@@ -26,7 +26,7 @@ const SetAvatar = () => {
         const { data } = await axios.post(setAvatarRoute, { ...userData, image: avatars[selectedAvatar] });
         if (data.isSet) {
             userData.isAvatarSet = true;
-            userData.avatar = avatars[selectedAvatar];
+            userData.avatarImage = avatars[selectedAvatar];
             localStorage.setItem('chat-app-user', JSON.stringify(userData));
             navigate('/');
         } else {
@@ -50,6 +50,7 @@ const SetAvatar = () => {
         } else {
             fetchAvatars();
         }
+        // eslint-disable-next-line
     }, []);
 
     return (

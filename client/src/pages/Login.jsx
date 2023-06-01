@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
+
 import Logo from '../assets/logo.svg'
+
 import { Link, useNavigate } from 'react-router-dom';
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { toastOptions } from '../utils/toastSettings';
+
 import axios from 'axios';
 import { loginRoute, verifyRoute } from '../utils/APIRoutes';
-import { toastOptions } from '../utils/toastSettings';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -19,8 +23,9 @@ const Login = () => {
             if (localStorage.getItem('chat-app-user')) {
                 const userDetails = await JSON.parse(localStorage.getItem('chat-app-user'));
                 const { data } = await axios.post(verifyRoute, userDetails);
-                if (data.isTokenValid)
+                if (data.isTokenValid) {
                     navigate('/');
+                }
             }
         }
         verify();
