@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { BiPhoneCall } from 'react-icons/bi'
 
@@ -7,27 +7,32 @@ import 'react-toastify/dist/ReactToastify.css';
 import { toastOptions } from '../utils/toastSettings';
 
 import ChatInput from './ChatInput';
-import Messages from './Messages';
 
 import { sendMessageRoute, getAllMessgesRoute } from '../utils/APIRoutes';
 
 import axios from 'axios';
 
-const ChatContainer = ({ currentChat, user }) => {
+const ChatContainer = ({ currentChat, user, socket }) => {
 
     const [messages, setMessages] = useState([]);
+    const [arrivedMessage, setArrivedMessage] = useState(null);
+
+    const scrollRef = useRef();
+
     useEffect(() => {
-        setMessages([]);
-        const fetchMessages = async () => {
-            const { data } = await axios.post(getAllMessgesRoute, {
-                from: user.id,
-                to: currentChat._id,
-                username: user.username,
-                token: user.token
-            });
-            setMessages(data.messages);
+        // setMessages([]);
+        if (currentChat) {
+            const fetchMessages = async () => {
+                const { data } = await axios.post(getAllMessgesRoute, {
+                    from: user.id,
+                    to: currentChat._id,
+                    username: user.username,
+                    token: user.token
+                });
+                setMessages(data.messages);
+            }
+            fetchMessages();
         }
-        fetchMessages();
     }, [currentChat]);
 
     const handleSendMsg = async (msg) => {
@@ -38,7 +43,35 @@ const ChatContainer = ({ currentChat, user }) => {
             token: user.token,
             username: user.username
         });
-    }
+
+        socket.current.emit('send-msg', {
+            to: currentChat._id,
+            from: user.id,
+            message: msg
+        });
+
+        const msgs = [...messages];
+        msgs.push({ fromSelf: true, message: msg });
+        setMessages(msgs);
+    };
+
+    useEffect(() => {
+        if (socket.current) {
+            socket.current.on('msg-receive', data => {
+                if (data.from === currentChat._id) {
+                    setArrivedMessage({ fromSelf: false, message: data.message });
+                }
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        arrivedMessage && setMessages((prev) => [...prev, arrivedMessage]);
+    }, [arrivedMessage]);
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
+    }, [messages]);
 
     return (
         <section className='pt-4 grid grid-rows-[10%_78%_12%] overflow-hidden gap-1 '>
@@ -56,9 +89,9 @@ const ChatContainer = ({ currentChat, user }) => {
 
             <div className='p-[1rem_2rem] flex flex-col gap-4 overflow-auto'>
                 {
-                    messages.map(msg => {
+                    messages.map((msg, index) => {
                         return (
-                            <div>
+                            <div key={index} ref={scrollRef}>
                                 <div className={`flex items-center ${msg.fromSelf ? `justify-end` : `justify-start`}`}>
                                     <div className={`max-w-[40%] break-words p-[0.8rem_1rem] text-[1.1rem] rounded-2xl text-[#d1d1d1] ${msg.fromSelf ? `bg-[#51137aa8]` : 'bg-[#3712774c] '}`}>
                                         {msg.message}

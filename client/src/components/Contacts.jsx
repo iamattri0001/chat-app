@@ -25,7 +25,7 @@ const Contacts = ({ contacts, user, changeChat }) => {
                     <section className='grid grid-rows-[10%_75%_15%] overflow-hidden h-full bg-[#080420] rounded-[inherit]'>
                         <div className='flex items-center justify-center gap-4'>
                             <img className='h-8' src={Logo} alt='logo' />
-                            <h3 className='uppercase text-white'>Snappy</h3>
+                            <h3 className='uppercase text-white'>Chatter Box</h3>
                         </div>
                         <div className='flex flex-col items-center overflow-auto gap-3 hide-scrollbar'>
                             {
