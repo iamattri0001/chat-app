@@ -78,7 +78,7 @@ const Register = () => {
                 <form onSubmit={(ev) => handleSubmit(ev)} className='flex flex-col gap-[2rem] bg-[#00000076] rounded-[2rem] px-[5rem] py-[3rem]' autoComplete='off'>
                     <div className='flex items-center gap-[1rem] justify-center'>
                         <img src={Logo} alt='Logo' className='h-[5rem]' />
-                        <h1 className='text-white uppercase'>Snappy</h1>
+                        <h1 className='text-white uppercase'>Chatter Box</h1>
                     </div>
                     <input
                         type="text"
