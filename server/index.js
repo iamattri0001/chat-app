@@ -32,7 +32,7 @@ app.use('/api/message', messageRoutes);
 
 const io = socket(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: process.env.ORIGIN,
         credetials: true
     }
 });

@@ -1,4 +1,4 @@
-export const host = "http://localhost:5000";
+export const host = "https://chatter-box-ei8h.onrender.com";
 
 //AUTH
 export const registerRoute = `${host}/api/auth/register`;
